@@ -4,19 +4,28 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Edit Book</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-  <h1>Edit Book</h1>
-  <form id="edit-book-form">
-    <input type="hidden" id="book-id">
-    <label for="title">Title:</label>
-    <input type="text" id="title" name="title" required>
-    <label for="author">Author:</label>
-    <input type="text" id="author" name="author" required>
-    <label for="publishedDate">Published Date:</label>
-    <input type="date" id="publishedDate" name="publishedDate" required>
-    <button type="submit">Update Book</button>
-  </form>
+  <div class="container">
+    <h1 class="mt-5">Edit Book</h1>
+    <form id="edit-book-form">
+      <input type="hidden" id="book-id">
+      <div class="form-group">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="author">Author:</label>
+        <input type="text" id="author" name="author" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="publishedDate">Published Date:</label>
+        <input type="date" id="publishedDate" name="publishedDate" class="form-control" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Update Book</button>
+    </form>
+  </div>
   <script src="main.js"></script>
 </body>
 </html>
