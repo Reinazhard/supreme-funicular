@@ -11,18 +11,34 @@ document.addEventListener('DOMContentLoaded', () => {
     books.forEach(book => {
       const li = document.createElement('li');
       li.className = 'list-group-item d-flex justify-content-between align-items-center';
-      li.textContent = `${book.title} by ${book.author} (${book.category})`;
+      li.dataset.bookId = book._id;
+
+      const statusText = book.available ? 'Available' : 
+        `Rented by ${book.rentedBy} (Due: ${new Date(book.dueDate).toLocaleDateString()})`;
+      
+      li.textContent = `${book.title} by ${book.author} (${book.category}) - ${statusText}`;
+      
+      // Add overdue warning if applicable
+      if (!book.available && new Date(book.dueDate) < new Date()) {
+        li.classList.add('bg-danger', 'text-white');
+      }
+      
       const buttonsDiv = document.createElement('div');
       const editButton = document.createElement('button');
       editButton.className = 'btn btn-secondary btn-sm mr-2';
       editButton.textContent = 'Edit';
       editButton.onclick = () => editBook(book);
       const deleteButton = document.createElement('button');
-      deleteButton.className = 'btn btn-danger btn-sm';
+      deleteButton.className = 'btn btn-danger btn-sm mr-2';
       deleteButton.textContent = 'Delete';
       deleteButton.onclick = () => deleteBook(book._id);
+      const rentButton = document.createElement('button');
+      rentButton.className = `btn btn-${book.available ? 'success' : 'warning'} btn-sm`;
+      rentButton.textContent = book.available ? 'Rent' : 'Return';
+      rentButton.onclick = () => book.available ? rentBook(book._id) : returnBook(book._id);
       buttonsDiv.appendChild(editButton);
       buttonsDiv.appendChild(deleteButton);
+      buttonsDiv.appendChild(rentButton);
       li.appendChild(buttonsDiv);
       bookList.appendChild(li);
     });
@@ -87,9 +103,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Delete book
   const deleteBook = async (id) => {
-    await fetch(`/api/books/${id}`, { method: 'DELETE' });
+    const confirmed = confirm('Are you sure you want to delete this book?');
+    if (confirmed) {
+      await fetch(`/api/books/${id}`, { method: 'DELETE' });
+      fetchBooks();
+    }
+  };
+
+  // Rent book
+  const rentBook = async (id) => {
+    const borrowerName = prompt('Enter borrower name:');
+    if (!borrowerName) return;
+    
+    await fetch(`/api/rentals/${id}/rent`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ borrowerName }),
+    });
     fetchBooks();
   };
+
+  // Return book
+  const returnBook = async (id) => {
+    await fetch(`/api/rentals/${id}/return`, {
+      method: 'POST'
+    });
+    fetchBooks();
+  };
+
+  // Add this function to check for overdue books periodically
+  const checkOverdueBooks = async () => {
+    const response = await fetch('/api/rentals/overdue');
+    const overdueBooks = await response.json();
+    
+    // Update the UI to show overdue status
+    const bookElements = document.querySelectorAll('#book-list li');
+    bookElements.forEach(li => {
+      const bookId = li.dataset.bookId;
+      const isOverdue = overdueBooks.some(book => book._id === bookId);
+      if (isOverdue) {
+        li.classList.add('bg-danger', 'text-white');
+      }
+    });
+  };
+
+  // Check for overdue books every minute
+  setInterval(checkOverdueBooks, 60000);
 
   fetchBooks();
 });

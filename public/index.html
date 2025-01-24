@@ -10,6 +10,13 @@
   <div class="container">
     <h1 class="mt-5">Library System</h1>
     <a href="add-book.html" class="btn btn-primary mb-3">Add Book</a>
+    
+    <!-- Add this section for overdue books -->
+    <div id="overdue-warning" class="alert alert-danger d-none">
+      <h4>Overdue Books</h4>
+      <ul id="overdue-list" class="list-group"></ul>
+    </div>
+    
     <ul id="book-list" class="list-group"></ul>
   </div>
   <script src="main.js"></script>
