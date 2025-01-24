@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     books.forEach(book => {
       const li = document.createElement('li');
       li.className = 'list-group-item d-flex justify-content-between align-items-center';
-      li.textContent = `${book.title} by ${book.author}`;
+      li.textContent = `${book.title} by ${book.author} (${book.category})`;
       const buttonsDiv = document.createElement('div');
       const editButton = document.createElement('button');
       editButton.className = 'btn btn-secondary btn-sm mr-2';
@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         title: formData.get('title'),
         author: formData.get('author'),
         publishedDate: formData.get('publishedDate'),
+        category: formData.get('category'),
       };
       await fetch('/api/books', {
         method: 'POST',
@@ -63,6 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('title').value = book.title;
         document.getElementById('author').value = book.author;
         document.getElementById('publishedDate').value = book.publishedDate.split('T')[0];
+        document.getElementById('category').value = book.category;
       });
 
     editBookForm.onsubmit = async (e) => {
@@ -72,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
         title: formData.get('title'),
         author: formData.get('author'),
         publishedDate: formData.get('publishedDate'),
+        category: formData.get('category'),
       };
       await fetch(`/api/books/${bookId}`, {
         method: 'PUT',
